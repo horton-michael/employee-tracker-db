@@ -1,5 +1,6 @@
 const mysql = require("mysql2");
 const inquirer = require("inquirer");
+const prompts = require("../prompts.js");
 
 async function main() {
   const db = mysql.createConnection({
