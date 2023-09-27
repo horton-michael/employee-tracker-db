@@ -1,8 +1,18 @@
-const mysql = require("mysql2");
+require("dotenv").config();
+const mysql = require("mysql2/promise");
 const inquirer = require("inquirer");
-const db = require("../server.js");
+// const db = require("../server.js");
 
-async function main() {
+const main = async () => {
+  const db = await mysql.createConnection(
+    {
+      host: "localhost",
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+    },
+    console.log(`Connected to the employee_tracker database.`)
+  );
   try {
     while (true) {
       const { action } = await inquirer.prompt([
@@ -61,11 +71,11 @@ async function main() {
               name: "salary",
               message: "What is the salary of the role?",
             },
-            {
-              type: "input",
-              name: "departmentId",
-              message: "What is the department ID of the role?",
-            },
+            // {
+            //   type: "input",
+            //   name: "departmentId",
+            //   message: "What is the department ID of the role?",
+            // },
           ]);
           await db.query(
             "INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)",
@@ -127,6 +137,6 @@ async function main() {
   } catch (err) {
     console.log(err);
   }
-}
+};
 
 main();
