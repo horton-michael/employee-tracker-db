@@ -83,7 +83,7 @@ const main = async () => {
           );
           break;
         case "Add an employee":
-          const { firstName, lastName, roleId, managerId } =
+          const { firstName, lastName, employeeRoleName, managerName } =
             await inquirer.prompt([
               {
                 type: "input",
@@ -97,15 +97,28 @@ const main = async () => {
               },
               {
                 type: "input",
-                name: "roleId",
-                message: "What is the employee's role ID?",
+                name: "employeeRoleName",
+                message: "What is the employee's role?",
               },
               {
                 type: "input",
-                name: "managerId",
-                message: "What is the employee's manager ID?",
+                name: "managerName",
+                message: "Who is the employee's manager?",
               },
             ]);
+
+          const [roleRows] = await db.query(
+            "SELECT id FROM role WHERE title = ?",
+            [employeeRoleName]
+          );
+          const roleId = roleRows[0].id;
+
+          const [managerRows] = await db.query(
+            "SELECT id FROM employee WHERE CONCAT(first_name, ' ', last_name) = ?",
+            [managerName]
+          );
+          const managerId = managerRows[0].id;
+
           await db.query(
             "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)",
             [firstName, lastName, roleId, managerId]
